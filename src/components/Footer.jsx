@@ -9,7 +9,7 @@ const Footer = () => {
     <>
       <div className={styles.footerContainer}>
         <small>
-          &copy; <Link to="about">Gonzalo Baez</Link> 2024
+          &copy; 2024 <Link to="about">About this page</Link>
         </small>
       </div>
     </>
