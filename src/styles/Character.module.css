@@ -1,0 +1,125 @@
+@font-face {
+  font-family: "Simpsons";
+  src: url("../assets/Simpsonfont.otf") format("opentype");
+}
+
+:root {
+  --item-width: 600px;
+}
+
+.characterListItem {
+  list-style: none;
+  margin: 20px;
+
+  min-width: min(var(--item-width), 66vw);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  scroll-snap-align: center;
+  scroll-padding: 100px;
+
+  /* border: 1px solid black;
+  border-radius: 20px; */
+}
+
+.characterContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.characterName,
+.quote {
+  margin-bottom: 20px;
+}
+
+.characterFeedbackContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/* This is not really used */
+.left,
+.right {
+  order: initial;
+}
+
+.imageContainer {
+  text-align: center;
+  height: 300px;
+  flex-grow: 1;
+
+  position: relative;
+}
+
+.imageContainer img {
+  max-width: 100%;
+  max-height: 100%;
+
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+
+.characterListItem.center .imageContainer.left img {
+  left: 0;
+  transform: none;
+}
+
+.characterListItem.center .imageContainer img {
+  right: 0;
+  transform: none;
+}
+
+/* CENTER CHARACTER */
+.characterListItem.center .characterName {
+  font-family: "Simpsons";
+  font-size: 2rem;
+  text-align: center;
+}
+
+.characterListItem.center .quote {
+  text-align: center;
+  font-style: italic;
+}
+
+.characterListItem.center .quote svg {
+  margin: 0 20px;
+}
+
+/* NON CENTER CHARACTER */
+.characterListItem:not(.center) {
+  justify-content: end;
+}
+
+.characterListItem:not(.center) .characterName,
+.characterListItem:not(.center) .quote,
+.characterListItem:not(.center) .characterFeedbackContainer {
+  display: none;
+}
+
+.characterListItem:not(.center) .characterImage {
+  max-height: 25vh;
+}
+
+@media screen and (min-width: 800px) {
+  .characterListItem:not(.center) {
+    min-width: min(250px, 25vw);
+  }
+
+  .characterListItem.center .characterContent {
+    align-self: center;
+  }
+
+  .characterListItem .characterContent {
+    align-self: flex-start;
+  }
+
+  .characterListItem img {
+    height: 100%;
+  }
+}

@@ -1,0 +1,23 @@
+.container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header,
+footer {
+  flex: 0 0;
+}
+
+main {
+  /* This makes main take up the space not used by header and footer */
+  height: 100%;
+}
+
+body {
+  background-image: url("../assets/clouds.jpg");
+  background-size: cover;
+}

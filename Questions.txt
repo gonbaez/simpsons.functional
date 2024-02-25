@@ -1,0 +1,1 @@
+- onLike, do not mutate the sate directly. Does it apply for functional components as well?

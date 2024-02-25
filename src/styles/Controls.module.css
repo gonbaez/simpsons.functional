@@ -1,0 +1,47 @@
+.searchInput {
+  max-width: 50vw;
+  min-width: 30vw;
+  margin: 10px;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+
+.error {
+  outline: 5px solid red;
+}
+
+.errorMessage {
+  position: absolute;
+  color: red;
+  font-size: smaller;
+  left: 0;
+  top: -2rem;
+  text-align: center;
+  right: 0;
+}
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.counterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 20%;
+}
+
+.likesContainer,
+.characterContainer {
+  display: flex;
+  align-items: center;
+}
+
+.likesContainer svg {
+  color: red;
+}
+
+.characterContainer svg {
+  color: #f8db27;
+}

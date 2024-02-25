@@ -1,0 +1,18 @@
+.deleteButton,
+.deleteConfirmButton {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.deleteButton svg,
+.deleteConfirmButton svg {
+  height: 30px;
+  width: 30px;
+}
+
+.deleteConfirmButton svg {
+  color: orange;
+}

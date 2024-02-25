@@ -1,0 +1,13 @@
+.likeButton {
+  color: red;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.likeButton svg {
+  height: 30px;
+  width: 30px;
+}

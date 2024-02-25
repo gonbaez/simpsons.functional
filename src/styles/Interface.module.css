@@ -1,0 +1,8 @@
+.interface {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  /* This makes interface take the whole space of main */
+  height: 100%;
+}
