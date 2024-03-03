@@ -40,9 +40,13 @@ const Characters = ({
     );
   }
 
+  const selectedIndex = data.findIndex((el) => el.selected);
+
   return (
     <>
-      <ScrollButtom direction="left" onScroll={onScroll} />
+      {selectedIndex ? (
+        <ScrollButtom direction="left" onScroll={onScroll} />
+      ) : null}
       <ul className={styles.characterList}>
         <div className={styles.emptyListItem}></div>
         {data.map((element) => {
@@ -59,7 +63,9 @@ const Characters = ({
         })}
         <div className={styles.emptyListItem}></div>
       </ul>
-      <ScrollButtom direction="right" onScroll={onScroll} />
+      {selectedIndex === data.length - 1 ? null : (
+        <ScrollButtom direction="right" onScroll={onScroll} />
+      )}
     </>
   );
 };
