@@ -1,42 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 
-import axios from "axios";
 import Joi from "joi";
 
-import offlineData from "../offlineData.json";
 import { searchSchema } from "../functions/validationSchemas.js";
+import { getQuotes } from "../functions/getQuotes.js";
 
 import styles from "../styles/Interface.module.css";
 
 import LoadingComponent from "./LoadingComponent";
 import Controls from "./Controls";
 import Characters from "./Characters";
+import { reducer, initialState } from "../appReducer.js";
 
 const Interface = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   const [quotes, setQuotes] = useState();
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [deleteTimeoutId, setDeleteTimeoutId] = useState();
-  const [filter, setFilter] = useState({ searchString: "" });
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedElement = useRef();
 
-  const getQuotes = async (count = 50) => {
-    const response = await axios.get(
-      `https://thesimpsonsquoteapi.glitch.me/quotes?count=${count}`
-    );
-
-    if (!response.data.length) {
-      console.log("Using offline data");
-      response.data = offlineData;
-    }
-
-    response.data.map((el, idx) => {
-      el.id = idx;
-      return el;
-    });
-
-    setQuotes(response.data);
-  };
+  useEffect(() => {
+    getQuotes(dispatch);
+  }, []);
 
   useEffect(() => {
     if (selectedElement.current) {
@@ -46,47 +32,7 @@ const Interface = () => {
         inline: "center",
       });
     }
-  }, [filteredQuotes]);
-
-  useEffect(() => {
-    if (!quotes) return;
-
-    let filteredData = quotes;
-
-    if (!filter.searchError && filter.searchString) {
-      filteredData = quotes.filter((el) => {
-        const name = el.character.toLowerCase();
-        return name.includes(filter.searchString.toLowerCase());
-      });
-    }
-
-    if (filteredData.length > 0) {
-      switch (filteredData.filter((el) => el.selected).length) {
-        case 0:
-          const indexInQuotes = quotes.findIndex(
-            (el) => el === filteredData[0]
-          );
-          filteredData[0].selected = true;
-
-          setSelectedIndex(indexInQuotes);
-          break;
-        case 1:
-          break;
-        default:
-          filteredData = filteredData.map((el) => {
-            el.selected = false;
-            return el;
-          });
-          filteredData[selectedIndex].selected = true;
-      }
-    }
-
-    setFilteredQuotes(filteredData);
-  }, [quotes, filter, selectedIndex]);
-
-  useEffect(() => {
-    getQuotes();
-  }, []);
+  }, [state.selectedIndex]);
 
   const onSearch = async (e) => {
     const _joiInstance = Joi.object(searchSchema);
@@ -95,23 +41,22 @@ const Interface = () => {
     try {
       await _joiInstance.validateAsync({ "Search string": searchValue });
     } catch (er) {
-      setFilter({
-        searchString: searchValue,
-        searchError: er.details[0].message,
+      dispatch({
+        type: "FILTER",
+        payload: {
+          searchString: searchValue,
+          searchError: er.details[0].message,
+        },
       });
+
       return;
     }
 
-    setFilter({ searchString: searchValue });
+    dispatch({ type: "FILTER", payload: { searchString: searchValue } });
   };
 
   const onLike = (e) => {
-    const data = [...quotes]; // WHY?!
-    const index = data.findIndex((el) => el.id === e);
-
-    data[index].like = !data[index].like;
-
-    setQuotes(data);
+    dispatch({ type: "LIKE", payload: e });
   };
 
   const onDelete = (e) => {
@@ -137,24 +82,21 @@ const Interface = () => {
   };
 
   const onRefresh = () => {
-    setQuotes();
-    getQuotes();
+    dispatch({ type: "RESET" });
+    getQuotes(dispatch);
   };
 
   const onClearSearch = () => {
-    setFilter({ searchString: "" });
+    dispatch({ type: "FILTER", payload: { searchString: "" } });
   };
 
   const onScroll = (e) => {
-    const data = [...filteredQuotes];
+    const data = state.filteredQuotes;
     const index = data.findIndex((el) => el.selected);
 
     if (index + e < 0 || index + e >= data.length) return;
 
-    data[index].selected = false;
-    data[index + e].selected = true;
-
-    setFilteredQuotes(data);
+    dispatch({ type: "SELECT_INDEX", payload: index + e });
   };
 
   const onDeleteConfirm = (e) => {
@@ -177,7 +119,9 @@ const Interface = () => {
     setQuotes(data);
   };
 
-  if (!quotes) {
+  console.log("Before Rendering", state);
+
+  if (!state || !state.quotes) {
     return (
       <div style={{ height: "100%", display: "flex", alignItems: "center" }}>
         <LoadingComponent />
@@ -185,7 +129,7 @@ const Interface = () => {
     );
   }
 
-  const likes = quotes.filter((el) => el.like).length;
+  const likes = state.filteredQuotes.filter((el) => el.like).length;
 
   return (
     <>
@@ -193,17 +137,17 @@ const Interface = () => {
         <Controls
           onSearch={onSearch}
           likes={likes}
-          characters={filteredQuotes.length}
-          searchError={filter.searchError}
-          searchString={filter.searchString}
+          characters={state.filteredQuotes.length}
+          searchError={state.filter.searchError}
+          searchString={state.filter.searchString}
         />
         <Characters
-          data={filteredQuotes}
+          data={state.filteredQuotes}
           onLike={onLike}
           onDelete={onDelete}
           onDeleteConfirm={onDeleteConfirm}
           onRefresh={onRefresh}
-          nonFilteredDataLength={quotes.length}
+          nonFilteredDataLength={state.quotes.length}
           onClearSearch={onClearSearch}
           onScroll={onScroll}
           selectedElement={selectedElement}

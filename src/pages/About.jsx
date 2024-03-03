@@ -10,11 +10,15 @@ const About = () => {
       </p>
       <p>
         It was written by{" "}
-        <a href="https://www.linkedin.com/in/gonzalo-baez/" target="_blank">
+        <a
+          href="https://www.linkedin.com/in/gonzalo-baez/"
+          target="_blank"
+          rel="noreferrer"
+        >
           Gonzalo Baez
         </a>{" "}
         as part of the Software Engineer Bootcamp course by{" "}
-        <a href="https://www.thejump.tech/" target="_blank">
+        <a href="https://www.thejump.tech/" target="_blank" rel="noreferrer">
           The Jump Digital School
         </a>
         .
