@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 
-import Joi from "joi";
-
-import { searchSchema } from "../functions/validationSchemas.js";
 import { getQuotes } from "../functions/getQuotes.js";
 
 import styles from "../styles/Interface.module.css";
@@ -15,9 +12,6 @@ import { reducer, initialState } from "../appReducer.js";
 const Interface = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [quotes, setQuotes] = useState();
-  const [filteredQuotes, setFilteredQuotes] = useState([]);
-  const [deleteTimeoutId, setDeleteTimeoutId] = useState();
   const selectedElement = useRef();
 
   useEffect(() => {
@@ -35,24 +29,7 @@ const Interface = () => {
   }, [state.selectedIndex]);
 
   const onSearch = async (e) => {
-    const _joiInstance = Joi.object(searchSchema);
-    const searchValue = e.target.value;
-
-    try {
-      await _joiInstance.validateAsync({ "Search string": searchValue });
-    } catch (er) {
-      dispatch({
-        type: "FILTER",
-        payload: {
-          searchString: searchValue,
-          searchError: er.details[0].message,
-        },
-      });
-
-      return;
-    }
-
-    dispatch({ type: "FILTER", payload: { searchString: searchValue } });
+    dispatch({ type: "FILTER", payload: e.target.value });
   };
 
   const onLike = (e) => {
@@ -60,25 +37,12 @@ const Interface = () => {
   };
 
   const onDelete = (e) => {
-    const data = [...quotes];
-    const index = data.findIndex((el) => el.id === e);
-
-    data[index].deleteConfirm = !data[index].deleteConfirm;
+    dispatch({ type: "DELETE", payload: e });
 
     const timeoutId = setTimeout(() => {
-      console.log("timout", quotes);
-
-      const data = [...quotes];
-      const index = data.findIndex((el) => el.id === e);
-
-      if (index === -1) return;
-
-      data[index].deleteConfirm = !data[index].deleteConfirm;
-      setQuotes(data);
+      console.log("timeout");
+      dispatch({ type: "DELETE", payload: e });
     }, 3000);
-
-    setDeleteTimeoutId(timeoutId);
-    setQuotes(data);
   };
 
   const onRefresh = () => {
@@ -87,39 +51,16 @@ const Interface = () => {
   };
 
   const onClearSearch = () => {
-    dispatch({ type: "FILTER", payload: { searchString: "" } });
+    dispatch({ type: "FILTER", payload: "" });
   };
 
   const onScroll = (e) => {
-    const data = state.filteredQuotes;
-    const index = data.findIndex((el) => el.selected);
-
-    if (index + e < 0 || index + e >= data.length) return;
-
-    dispatch({ type: "SELECT_INDEX", payload: index + e });
+    dispatch({ type: "SELECT_INDEX", payload: e });
   };
 
   const onDeleteConfirm = (e) => {
-    clearTimeout(deleteTimeoutId);
-    setDeleteTimeoutId(null);
-
-    const data = [...quotes];
-    const index = data.findIndex((el) => el.id === e);
-
-    data.splice(index, 1);
-
-    if (data.length) {
-      if (index === data.length) {
-        data[index - 1].selected = true;
-      } else {
-        data[index].selected = true;
-      }
-    }
-
-    setQuotes(data);
+    dispatch({ type: "DELETE_CONFIRM", payload: e });
   };
-
-  console.log("Before Rendering", state);
 
   if (!state || !state.quotes) {
     return (
